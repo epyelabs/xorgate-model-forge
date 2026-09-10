@@ -1,0 +1,11 @@
+{
+  "specVersion": 1,
+  "jobId": "missing-class",
+  "task": "autolabel",
+  "recipe": "yolov8",
+  "model": { "family": "detection", "name": "yolov8n" },
+  "minConfidence": 0.4,
+  "classMap": { "truck": "forklift" },
+  "images": "all",
+  "limits": { "maxMinutes": 10 }
+}

@@ -1,0 +1,150 @@
+# Release: trigger is MANUAL (Actions > Release > Run workflow on the
+# `v<version>` tag). The tag must equal `v<pyproject version>`; the gate
+# (lint, typecheck, the golden suite) must be green on the tagged tree; then
+# two images are built and pushed to GHCR:
+#
+#   ghcr.io/epyelabs/xmf:<version>        the cpu target, linux/amd64 + linux/arm64
+#   ghcr.io/epyelabs/xmf:<version>-cuda   the cuda target, linux/amd64
+#   :latest and :latest-cuda for a stable version
+#
+# What the repository must have (docs/compatibility.md, "Releasing"):
+#   - `packages: write` (below) so GITHUB_TOKEN can push to GHCR; the package
+#     ghcr.io/epyelabs/xmf must allow this repository to push (the first push
+#     creates it; then link it to the repository under the package settings).
+#   - Optionally a `release` environment with required reviewers; the gate
+#     job is bound to it.
+# PyPI publishing is a later step (plan Q9): the `pypi` job below is
+# disabled with `if: false` until the owner configures trusted publishing.
+name: Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    name: gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment: release
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      stable: ${{ steps.version.outputs.stable }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: The tag must match pyproject.toml
+        id: version
+        run: |
+          VERSION="$(uv run --no-project python -c 'import tomllib; print(tomllib.load(open("pyproject.toml","rb"))["project"]["version"])')"
+          if [ "${GITHUB_REF_NAME}" != "v${VERSION}" ]; then
+            echo "run this workflow on the tag v${VERSION} (got ${GITHUB_REF_NAME})" >&2
+            exit 1
+          fi
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          case "${VERSION}" in
+            *-*|*a*|*b*|*rc*) echo "stable=false" >> "$GITHUB_OUTPUT" ;;
+            *)                echo "stable=true" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Cache the pulled fixtures and the base weights
+        uses: actions/cache@v4
+        with:
+          path: |
+            fixtures/video/drive.mp4
+            fixtures/models
+            ~/.xorgate/forge/weights
+          key: fixtures-${{ hashFiles('fixtures/fixtures.json', 'src/xorgate_forge/recipes/yolov8.py') }}
+
+      - run: uv sync --extra all --extra dev
+      - run: npm ci --no-audit --no-fund
+      - run: make lint
+      - run: make typecheck
+      - run: make test
+        env:
+          XMF_WORKERS: "2"
+
+  images:
+    name: ghcr.io/epyelabs/xmf (cpu amd64+arm64, cuda amd64)
+    needs: gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta-cpu
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/epyelabs/xmf
+          tags: |
+            type=raw,value=${{ needs.gate.outputs.version }}
+            type=raw,value=latest,enable=${{ needs.gate.outputs.stable == 'true' }}
+          labels: |
+            org.opencontainers.image.title=xmf
+            org.opencontainers.image.description=xorgate-model-forge (xorgate-forge): train, evaluate, auto-label, export and check detection models for the xorgate workflow engine
+            org.opencontainers.image.licenses=MIT
+            org.opencontainers.image.documentation=https://docs.xorgate.io/docs/models
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: cpu
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta-cpu.outputs.tags }}
+          labels: ${{ steps.meta-cpu.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - id: meta-cuda
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/epyelabs/xmf
+          tags: |
+            type=raw,value=${{ needs.gate.outputs.version }}-cuda
+            type=raw,value=latest-cuda,enable=${{ needs.gate.outputs.stable == 'true' }}
+          labels: |
+            org.opencontainers.image.title=xmf (cuda)
+            org.opencontainers.image.licenses=MIT
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: cuda
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta-cuda.outputs.tags }}
+          labels: ${{ steps.meta-cuda.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: xmf doctor from the pushed cpu image
+        run: docker run --rm ghcr.io/epyelabs/xmf:${{ needs.gate.outputs.version }} doctor
+
+  pypi:
+    name: PyPI (disabled until trusted publishing is configured)
+    if: false
+    needs: gate
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv build
+      - run: uv publish

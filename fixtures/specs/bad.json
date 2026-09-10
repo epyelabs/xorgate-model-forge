@@ -1,0 +1,1 @@
+{ "specVersion": 1, "jobId": "bad", "task": "train", "recipe": "yolov8", "base": { "kind": "pretrained" } }

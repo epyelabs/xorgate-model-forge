@@ -1,0 +1,17 @@
+{
+  "info": { "description": "yard-cameras v3", "version": "3", "date_created": "2026-09-12T14:03:11.000Z" },
+  "categories": [
+    { "id": 0, "name": "forklift" },
+    { "id": 1, "name": "pallet" }
+  ],
+  "images": [
+    { "id": "it_01J9X0A7Q3", "file_name": "images/it_01J9X0A7Q3.jpg", "width": 1280, "height": 720,
+      "group": "ms_7f2a:1757685600", "source": { "kind": "recording", "deviceId": "ee11cfe1", "sessionId": "ms_7f2a", "ts": "2026-09-12T13:20:04.500Z" } }
+  ],
+  "annotations": [
+    { "id": 1, "image_id": "it_01J9X0A7Q3", "category_id": 0, "bbox": [412.0, 188.5, 230.0, 301.0], "area": 69230.0, "iscrowd": 0,
+      "source": "human" },
+    { "id": 2, "image_id": "it_01J9X0A7Q3", "category_id": 1, "bbox": [700.0, 402.0, 180.0, 96.0], "area": 17280.0, "iscrowd": 0,
+      "source": "human" }
+  ]
+}

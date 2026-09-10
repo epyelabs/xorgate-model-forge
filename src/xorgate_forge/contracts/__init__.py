@@ -1,0 +1,120 @@
+"""The forge's contracts (design 3b): dataset v1, job spec v1, result v1,
+progress v1, the labels file, and the engine's model manifest v1 with the
+additive `provenance` block. Pydantic models are the source of truth; the
+JSON Schemas under `contracts/` are emitted from them (`make schemas`) and
+the examples next to them are validated by the golden suite.
+
+Readers ignore unknown fields (pydantic's default), so a document written by
+a newer additive minor still parses here, the same rule the engine applies to
+its own documents (docs/compatibility.md)."""
+
+from .dataset import (
+    CocoAnnotation,
+    CocoCategory,
+    CocoFile,
+    CocoImage,
+    DatasetHeader,
+    DatasetSource,
+    Split,
+    SplitCounts,
+    Splits,
+    splits_adapter,
+)
+from .job import (
+    AutolabelJobSpec,
+    BaseSpec,
+    Hyperparameters,
+    JobSpec,
+    Limits,
+    ModelRefSpec,
+    OutputSpec,
+    TrainJobSpec,
+    job_spec_adapter,
+    parse_job_spec,
+)
+from .labels import LabelBox, LabelsFile, LabelsImage, LabelsSummary
+from .manifest import (
+    MODEL_NAME_RE,
+    FileIntegrity,
+    ManifestInput,
+    ManifestPostprocess,
+    ModelManifest,
+    Provenance,
+    ProvenanceBase,
+    ProvenanceDataset,
+    ProvenanceMetrics,
+)
+from .progress import (
+    EpochMessage,
+    LogMessage,
+    Phase,
+    ProgressMessage,
+    StatusMessage,
+    progress_adapter,
+)
+from .result import (
+    Artifacts,
+    CheckBlock,
+    EffectiveHyperparameters,
+    EvalArtifacts,
+    JobError,
+    JobResult,
+    Metrics,
+    PerClassMetrics,
+    ResultDataset,
+    ResultLabels,
+    ResultModel,
+)
+
+__all__ = [
+    "MODEL_NAME_RE",
+    "Artifacts",
+    "AutolabelJobSpec",
+    "BaseSpec",
+    "CheckBlock",
+    "CocoAnnotation",
+    "CocoCategory",
+    "CocoFile",
+    "CocoImage",
+    "DatasetHeader",
+    "DatasetSource",
+    "EffectiveHyperparameters",
+    "EpochMessage",
+    "EvalArtifacts",
+    "FileIntegrity",
+    "Hyperparameters",
+    "JobError",
+    "JobResult",
+    "JobSpec",
+    "LabelBox",
+    "LabelsFile",
+    "LabelsImage",
+    "LabelsSummary",
+    "Limits",
+    "LogMessage",
+    "ManifestInput",
+    "ManifestPostprocess",
+    "Metrics",
+    "ModelManifest",
+    "ModelRefSpec",
+    "OutputSpec",
+    "PerClassMetrics",
+    "Phase",
+    "ProgressMessage",
+    "Provenance",
+    "ProvenanceBase",
+    "ProvenanceDataset",
+    "ProvenanceMetrics",
+    "ResultDataset",
+    "ResultLabels",
+    "ResultModel",
+    "Split",
+    "SplitCounts",
+    "Splits",
+    "StatusMessage",
+    "TrainJobSpec",
+    "job_spec_adapter",
+    "parse_job_spec",
+    "progress_adapter",
+    "splits_adapter",
+]

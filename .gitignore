@@ -1,0 +1,22 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+node_modules/
+out/
+out-*/
+*.log
+.DS_Store
+.mypy_cache/
+.ruff_cache/
+
+# Pulled fixtures (fixtures/fixtures.json, `make fixtures`): the golden video
+# and the yolov8n model are fetched, never committed, like the engine's.
+fixtures/video/*.mp4
+fixtures/models/
+
+# Scratch produced by the fixture builder and the suite
+fixtures/ds/.build/
+runs/

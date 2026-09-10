@@ -1,0 +1,587 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://docs.xorgate.io/schemas/forge/result.schema.json",
+  "title": "JobResult",
+  "x-forgeVersion": "0.1.0",
+  "$defs": {
+    "Artifacts": {
+      "properties": {
+        "trainLog": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trainlog"
+        },
+        "weights": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Weights"
+        },
+        "eval": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EvalArtifacts"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "labels": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Labels"
+        }
+      },
+      "title": "Artifacts",
+      "type": "object"
+    },
+    "BaseSpec": {
+      "description": "The weights training starts from.",
+      "properties": {
+        "kind": {
+          "enum": [
+            "pretrained",
+            "weights"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "pretrained: a recipe base such as \"yolov8n\"",
+          "title": "Ref"
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "weights: a path to a .pt file (train-from-previous)",
+          "title": "Path"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "BaseSpec",
+      "type": "object"
+    },
+    "CheckBlock": {
+      "properties": {
+        "ok": {
+          "title": "Ok",
+          "type": "boolean"
+        },
+        "lines": {
+          "description": "The four check lines, as `xmf check` prints them.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Lines",
+          "type": "array"
+        }
+      },
+      "required": [
+        "ok",
+        "lines"
+      ],
+      "title": "CheckBlock",
+      "type": "object"
+    },
+    "EffectiveHyperparameters": {
+      "description": "After the preset and auto batch.",
+      "properties": {
+        "epochs": {
+          "minimum": 1,
+          "title": "Epochs",
+          "type": "integer"
+        },
+        "imgsz": {
+          "minimum": 32,
+          "title": "Imgsz",
+          "type": "integer"
+        },
+        "batch": {
+          "minimum": 1,
+          "title": "Batch",
+          "type": "integer"
+        },
+        "patience": {
+          "minimum": 0,
+          "title": "Patience",
+          "type": "integer"
+        },
+        "seed": {
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "epochs",
+        "imgsz",
+        "batch",
+        "patience",
+        "seed"
+      ],
+      "title": "EffectiveHyperparameters",
+      "type": "object"
+    },
+    "EvalArtifacts": {
+      "properties": {
+        "metrics": {
+          "title": "Metrics",
+          "type": "string"
+        },
+        "confusion": {
+          "title": "Confusion",
+          "type": "string"
+        },
+        "samples": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Samples",
+          "type": "array"
+        }
+      },
+      "required": [
+        "metrics",
+        "confusion"
+      ],
+      "title": "EvalArtifacts",
+      "type": "object"
+    },
+    "JobError": {
+      "properties": {
+        "phase": {
+          "enum": [
+            "prepare",
+            "train",
+            "export",
+            "check",
+            "evaluate",
+            "label",
+            "done"
+          ],
+          "title": "Phase",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "phase",
+        "message"
+      ],
+      "title": "JobError",
+      "type": "object"
+    },
+    "Metrics": {
+      "properties": {
+        "mAP50": {
+          "title": "Map50",
+          "type": "number"
+        },
+        "mAP50_95": {
+          "title": "Map50 95",
+          "type": "number"
+        },
+        "precision": {
+          "title": "Precision",
+          "type": "number"
+        },
+        "recall": {
+          "title": "Recall",
+          "type": "number"
+        },
+        "perClass": {
+          "items": {
+            "$ref": "#/$defs/PerClassMetrics"
+          },
+          "title": "Perclass",
+          "type": "array"
+        }
+      },
+      "required": [
+        "mAP50",
+        "mAP50_95",
+        "precision",
+        "recall"
+      ],
+      "title": "Metrics",
+      "type": "object"
+    },
+    "PerClassMetrics": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "mAP50": {
+          "title": "Map50",
+          "type": "number"
+        },
+        "mAP50_95": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Map50 95"
+        },
+        "precision": {
+          "title": "Precision",
+          "type": "number"
+        },
+        "recall": {
+          "title": "Recall",
+          "type": "number"
+        },
+        "instances": {
+          "description": "Ground-truth boxes in the validation split.",
+          "minimum": 0,
+          "title": "Instances",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "mAP50",
+        "precision",
+        "recall",
+        "instances"
+      ],
+      "title": "PerClassMetrics",
+      "type": "object"
+    },
+    "ResultDataset": {
+      "properties": {
+        "classes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Classes",
+          "type": "array"
+        },
+        "images": {
+          "$ref": "#/$defs/SplitCounts"
+        },
+        "instances": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "Ground-truth boxes per class, all splits.",
+          "title": "Instances",
+          "type": "object"
+        }
+      },
+      "required": [
+        "classes",
+        "images"
+      ],
+      "title": "ResultDataset",
+      "type": "object"
+    },
+    "ResultLabels": {
+      "properties": {
+        "file": {
+          "title": "File",
+          "type": "string"
+        },
+        "images": {
+          "minimum": 0,
+          "title": "Images",
+          "type": "integer"
+        },
+        "boxes": {
+          "minimum": 0,
+          "title": "Boxes",
+          "type": "integer"
+        },
+        "perClass": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Perclass",
+          "type": "object"
+        },
+        "unmapped": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Unmapped",
+          "type": "object"
+        }
+      },
+      "required": [
+        "file",
+        "images",
+        "boxes"
+      ],
+      "title": "ResultLabels",
+      "type": "object"
+    },
+    "ResultModel": {
+      "properties": {
+        "family": {
+          "title": "Family",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "version": {
+          "minimum": 1,
+          "title": "Version",
+          "type": "integer"
+        },
+        "dir": {
+          "description": "Relative to the job's output directory: model/<family>/<name>/<version>",
+          "title": "Dir",
+          "type": "string"
+        }
+      },
+      "required": [
+        "family",
+        "name",
+        "version",
+        "dir"
+      ],
+      "title": "ResultModel",
+      "type": "object"
+    },
+    "SplitCounts": {
+      "properties": {
+        "train": {
+          "minimum": 0,
+          "title": "Train",
+          "type": "integer"
+        },
+        "val": {
+          "minimum": 0,
+          "title": "Val",
+          "type": "integer"
+        },
+        "test": {
+          "minimum": 0,
+          "title": "Test",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "train",
+        "val",
+        "test"
+      ],
+      "title": "SplitCounts",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "resultVersion": {
+      "const": 1,
+      "default": 1,
+      "title": "Resultversion",
+      "type": "integer"
+    },
+    "jobId": {
+      "title": "Jobid",
+      "type": "string"
+    },
+    "task": {
+      "enum": [
+        "train",
+        "autolabel"
+      ],
+      "title": "Task",
+      "type": "string"
+    },
+    "recipe": {
+      "title": "Recipe",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "succeeded",
+        "failed"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "startedAt": {
+      "title": "Startedat",
+      "type": "string"
+    },
+    "endedAt": {
+      "title": "Endedat",
+      "type": "string"
+    },
+    "durationMs": {
+      "minimum": 0,
+      "title": "Durationms",
+      "type": "integer"
+    },
+    "dataset": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ResultDataset"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "base": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BaseSpec"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "hyperparameters": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EffectiveHyperparameters"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "epochsCompleted": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Epochscompleted"
+    },
+    "metrics": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Metrics"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "model": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ResultModel"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "check": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CheckBlock"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "artifacts": {
+      "$ref": "#/$defs/Artifacts"
+    },
+    "labels": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ResultLabels"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "provenance": {
+      "additionalProperties": true,
+      "title": "Provenance",
+      "type": "object"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/JobError"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "jobId",
+    "task",
+    "recipe",
+    "status",
+    "startedAt",
+    "endedAt",
+    "durationMs"
+  ],
+  "type": "object"
+}

@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://docs.xorgate.io/schemas/forge/progress.schema.json",
+  "title": "progress v1: one line of progress.jsonl",
+  "x-forgeVersion": "0.1.0",
+  "$defs": {
+    "EpochMessage": {
+      "properties": {
+        "t": {
+          "const": "epoch",
+          "default": "epoch",
+          "title": "T",
+          "type": "string"
+        },
+        "at": {
+          "title": "At",
+          "type": "string"
+        },
+        "epoch": {
+          "minimum": 1,
+          "title": "Epoch",
+          "type": "integer"
+        },
+        "epochs": {
+          "minimum": 1,
+          "title": "Epochs",
+          "type": "integer"
+        },
+        "loss": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Loss"
+        },
+        "mAP50": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "When the recipe validates per epoch.",
+          "title": "Map50"
+        }
+      },
+      "required": [
+        "at",
+        "epoch",
+        "epochs"
+      ],
+      "title": "EpochMessage",
+      "type": "object"
+    },
+    "LogMessage": {
+      "properties": {
+        "t": {
+          "const": "log",
+          "default": "log",
+          "title": "T",
+          "type": "string"
+        },
+        "at": {
+          "title": "At",
+          "type": "string"
+        },
+        "line": {
+          "title": "Line",
+          "type": "string"
+        }
+      },
+      "required": [
+        "at",
+        "line"
+      ],
+      "title": "LogMessage",
+      "type": "object"
+    },
+    "StatusMessage": {
+      "properties": {
+        "t": {
+          "const": "status",
+          "default": "status",
+          "title": "T",
+          "type": "string"
+        },
+        "at": {
+          "title": "At",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "running",
+            "succeeded",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "phase": {
+          "enum": [
+            "prepare",
+            "train",
+            "export",
+            "check",
+            "evaluate",
+            "label",
+            "done"
+          ],
+          "title": "Phase",
+          "type": "string"
+        }
+      },
+      "required": [
+        "at",
+        "status",
+        "phase"
+      ],
+      "title": "StatusMessage",
+      "type": "object"
+    }
+  },
+  "discriminator": {
+    "mapping": {
+      "epoch": "#/$defs/EpochMessage",
+      "log": "#/$defs/LogMessage",
+      "status": "#/$defs/StatusMessage"
+    },
+    "propertyName": "t"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/StatusMessage"
+    },
+    {
+      "$ref": "#/$defs/EpochMessage"
+    },
+    {
+      "$ref": "#/$defs/LogMessage"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "specVersion": 1,
+  "jobId": "budget",
+  "task": "train",
+  "recipe": "yolov8",
+  "output": { "family": "detection", "name": "fixture-vehicles", "version": 1 },
+  "base": { "kind": "pretrained", "ref": "yolov8n" },
+  "mode": "fast",
+  "hyperparameters": { "epochs": 50, "imgsz": 320, "batch": 8, "patience": 50, "seed": 0 },
+  "limits": { "maxMinutes": 1 }
+}

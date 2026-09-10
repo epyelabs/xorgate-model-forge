@@ -1,0 +1,32 @@
+{
+  "specVersion": 1,
+  "jobId": "quick",
+  "task": "train",
+  "recipe": "yolov8",
+  "output": {
+    "family": "detection",
+    "name": "fixture-vehicles",
+    "version": 1,
+    "label": "Fixture vehicles (drive.mp4, quick: 12 epochs at 320)"
+  },
+  "base": {
+    "kind": "pretrained",
+    "ref": "yolov8n"
+  },
+  "mode": "fast",
+  "hyperparameters": {
+    "epochs": 12,
+    "imgsz": 320,
+    "batch": 8,
+    "patience": 12,
+    "seed": 0
+  },
+  "limits": {
+    "maxMinutes": 20
+  },
+  "provenance": {
+    "orgId": "fixture",
+    "datasetId": "fixture-vehicles",
+    "datasetVersion": 1
+  }
+}

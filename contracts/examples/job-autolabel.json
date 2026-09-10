@@ -1,0 +1,12 @@
+{
+  "specVersion": 1,
+  "jobId": "tj_01J9X5A1P0",
+  "task": "autolabel",
+  "recipe": "yolov8",
+  "model": { "family": "detection", "name": "yolov8n" },
+  "minConfidence": 0.4,
+  "classMap": { "truck": "forklift" },
+  "images": "all",
+  "limits": { "maxMinutes": 30 },
+  "provenance": { "orgId": "cb1e1710-3ee5-49ad-b3d3-32b2290f6e19", "datasetId": "6b1c1d8e-5f0a-4c1e-9a7d-2f3e4b5c6d7e" }
+}

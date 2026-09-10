@@ -1,0 +1,10 @@
+{"t":"status","at":"2026-09-12T14:10:02.000Z","status":"running","phase":"prepare"}
+{"t":"log","at":"2026-09-12T14:10:05.120Z","line":"materialized yolo layout: 330 train, 82 val images, 2 classes"}
+{"t":"status","at":"2026-09-12T14:10:06.000Z","status":"running","phase":"train"}
+{"t":"epoch","at":"2026-09-12T14:10:48.300Z","epoch":1,"epochs":50,"loss":2.314,"mAP50":0.102}
+{"t":"epoch","at":"2026-09-12T14:11:29.900Z","epoch":2,"epochs":50,"loss":1.871,"mAP50":0.318}
+{"t":"log","at":"2026-09-12T14:36:10.000Z","line":"early stop: no improvement for 10 epochs (best epoch 27)"}
+{"t":"status","at":"2026-09-12T14:36:11.000Z","status":"running","phase":"export"}
+{"t":"status","at":"2026-09-12T14:36:40.000Z","status":"running","phase":"check"}
+{"t":"status","at":"2026-09-12T14:36:44.000Z","status":"running","phase":"evaluate"}
+{"t":"status","at":"2026-09-12T14:41:37.000Z","status":"succeeded","phase":"done"}

@@ -1,0 +1,42 @@
+{
+  "resultVersion": 1,
+  "jobId": "tj_01J9X5A1P0",
+  "task": "autolabel",
+  "recipe": "yolov8",
+  "status": "succeeded",
+  "startedAt": "2026-09-10T16:01:35.089Z",
+  "endedAt": "2026-09-10T16:01:36.318Z",
+  "durationMs": 1229,
+  "dataset": {
+    "classes": [
+      "car",
+      "truck"
+    ],
+    "images": {
+      "train": 51,
+      "val": 12,
+      "test": 0
+    },
+    "instances": {}
+  },
+  "artifacts": {
+    "labels": "labels.json"
+  },
+  "labels": {
+    "file": "labels.json",
+    "images": 63,
+    "boxes": 108,
+    "perClass": {
+      "car": 92,
+      "truck": 16
+    },
+    "unmapped": {
+      "train": 1
+    }
+  },
+  "provenance": {
+    "orgId": "cb1e1710-3ee5-49ad-b3d3-32b2290f6e19",
+    "datasetId": "6b1c1d8e-5f0a-4c1e-9a7d-2f3e4b5c6d7e"
+  },
+  "error": null
+}

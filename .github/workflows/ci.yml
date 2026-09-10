@@ -1,0 +1,82 @@
+# The forge's regression gate on every push to main and every pull request:
+# lint (ruff), typecheck (mypy --strict), the golden suite on CPU (contracts,
+# dataset round trips, the quick training run, the real `npx xwe` on what
+# the forge produced, the SageMaker host under a fake /opt/ml tree, the
+# time budget), on Linux x64 and macOS; and the cpu image builds and runs
+# `xmf doctor`.
+#
+# Network: uv and npm installs, the fixtures pull from
+# https://models.xorgate.io (cached on fixtures.json), and the yolov8n.pt
+# base weights download on the first run (cached on the recipe's refs).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: ${{ matrix.os }} / python 3.11
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Cache the pulled fixtures and the base weights
+        uses: actions/cache@v4
+        with:
+          path: |
+            fixtures/video/drive.mp4
+            fixtures/models
+            ~/.xorgate/forge/weights
+          key: fixtures-${{ hashFiles('fixtures/fixtures.json', 'src/xorgate_forge/recipes/yolov8.py') }}
+
+      - run: uv sync --extra all --extra dev
+      - run: npm ci --no-audit --no-fund
+      - run: make lint
+      - run: make typecheck
+      - run: make test
+        env:
+          XMF_WORKERS: "2"
+
+  image:
+    # The cpu target still builds and the image still answers `xmf doctor`
+    # with the weights baked. Native architecture only and no push; the
+    # release workflow builds and pushes the multi-arch image.
+    name: image (cpu, linux/amd64, no push)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: cpu
+          load: true
+          tags: xmf:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: xmf doctor inside the image
+        run: docker run --rm xmf:ci doctor
+      - name: The recipes and their licenses inside the image
+        run: docker run --rm xmf:ci recipes | grep -q 'AGPL-3.0'

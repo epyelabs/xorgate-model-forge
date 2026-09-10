@@ -1,0 +1,17 @@
+{
+  "labelsVersion": 1,
+  "jobId": "tj_01J9X5A1P0",
+  "model": { "family": "detection", "name": "yolov8n", "version": 1 },
+  "minConfidence": 0.4,
+  "classMap": { "truck": "forklift" },
+  "images": [
+    {
+      "id": "it_01J9X0A7Q3",
+      "boxes": [
+        { "cls": "forklift", "modelCls": "truck", "confidence": 0.71, "xyxy": [412.0, 188.5, 642.0, 489.5] }
+      ]
+    },
+    { "id": "it_01J9X0A7QB", "boxes": [] }
+  ],
+  "summary": { "images": 412, "boxes": 1387, "perClass": { "forklift": 1387 }, "unmapped": { "car": 88, "person": 12 } }
+}

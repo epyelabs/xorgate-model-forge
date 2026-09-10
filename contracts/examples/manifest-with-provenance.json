@@ -1,0 +1,62 @@
+{
+  "manifestVersion": 1,
+  "family": "detection",
+  "name": "yard-forklift",
+  "version": 2,
+  "label": "Forklift and pallet (yard cameras, v3)",
+  "backend": "cpu-onnx",
+  "input": {
+    "width": 640,
+    "height": 640,
+    "layout": "nchw",
+    "colorSpace": "rgb",
+    "normalize": {
+      "scale": 0.00392156862745098
+    },
+    "letterbox": {
+      "enabled": true,
+      "padValue": 114
+    }
+  },
+  "classNames": [
+    "forklift",
+    "pallet"
+  ],
+  "postprocess": {
+    "kind": "yolov8",
+    "nmsIouThreshold": 0.45
+  },
+  "quantization": "fp32",
+  "files": {
+    "model.onnx": {
+      "sha256": "9f2c0b6f5a1d4e8c7b3a2f1e0d9c8b7a6f5e4d3c2b1a0f9e8d7c6b5a4f3e2d1c",
+      "sizeBytes": 12212736
+    }
+  },
+  "provenance": {
+    "trainedBy": "xorgate-model-forge@0.1.0",
+    "recipe": "yolov8",
+    "recipeLicense": "AGPL-3.0",
+    "base": {
+      "kind": "pretrained",
+      "ref": "yolov8n"
+    },
+    "job": "tj_01J9X4M2K8",
+    "dataset": {
+      "id": "6b1c1d8e-5f0a-4c1e-9a7d-2f3e4b5c6d7e",
+      "version": 3,
+      "images": 412,
+      "hash": "076949f71a900b0e448b4d739e45ff43373ef0c60e3c03376d9248f0274ca24d"
+    },
+    "metrics": {
+      "mAP50": 0.912,
+      "mAP50_95": 0.664
+    },
+    "trainedAt": "2026-09-12T14:41:37.000Z",
+    "platform": {
+      "orgId": "cb1e1710-3ee5-49ad-b3d3-32b2290f6e19",
+      "datasetVersionId": "dv_01J9X0B2R4"
+    },
+    "epochsCompleted": 37
+  }
+}

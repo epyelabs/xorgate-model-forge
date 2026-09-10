@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://docs.xorgate.io/schemas/forge/splits.schema.json",
+  "title": "dataset v1: splits.json",
+  "x-forgeVersion": "0.1.0",
+  "additionalProperties": {
+    "enum": [
+      "train",
+      "val",
+      "test"
+    ],
+    "type": "string"
+  },
+  "type": "object"
+}

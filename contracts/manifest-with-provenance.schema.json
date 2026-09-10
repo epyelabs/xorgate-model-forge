@@ -1,0 +1,447 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://docs.xorgate.io/schemas/forge/manifest-with-provenance.schema.json",
+  "title": "ModelManifest",
+  "x-forgeVersion": "0.1.0",
+  "$defs": {
+    "FileIntegrity": {
+      "properties": {
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "sizeBytes": {
+          "minimum": 0,
+          "title": "Sizebytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sha256",
+        "sizeBytes"
+      ],
+      "title": "FileIntegrity",
+      "type": "object"
+    },
+    "Letterbox": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "padValue": {
+          "default": 114,
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Padvalue",
+          "type": "integer"
+        }
+      },
+      "title": "Letterbox",
+      "type": "object"
+    },
+    "ManifestInput": {
+      "properties": {
+        "width": {
+          "minimum": 1,
+          "title": "Width",
+          "type": "integer"
+        },
+        "height": {
+          "minimum": 1,
+          "title": "Height",
+          "type": "integer"
+        },
+        "layout": {
+          "const": "nchw",
+          "default": "nchw",
+          "title": "Layout",
+          "type": "string"
+        },
+        "colorSpace": {
+          "const": "rgb",
+          "default": "rgb",
+          "title": "Colorspace",
+          "type": "string"
+        },
+        "normalize": {
+          "$ref": "#/$defs/Normalize"
+        },
+        "letterbox": {
+          "$ref": "#/$defs/Letterbox"
+        }
+      },
+      "required": [
+        "width",
+        "height"
+      ],
+      "title": "ManifestInput",
+      "type": "object"
+    },
+    "ManifestPostprocess": {
+      "properties": {
+        "kind": {
+          "enum": [
+            "yolov8",
+            "rtdetr",
+            "yolov8-seg",
+            "depth-anything"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "nmsIouThreshold": {
+          "default": 0.45,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Nmsiouthreshold",
+          "type": "number"
+        },
+        "maskThreshold": {
+          "default": 0.5,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Maskthreshold",
+          "type": "number"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "ManifestPostprocess",
+      "type": "object"
+    },
+    "Normalize": {
+      "properties": {
+        "scale": {
+          "default": 0.00392156862745098,
+          "exclusiveMinimum": 0,
+          "title": "Scale",
+          "type": "number"
+        },
+        "mean": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "maxItems": 3,
+              "minItems": 3,
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mean"
+        },
+        "std": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "maxItems": 3,
+              "minItems": 3,
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Std"
+        }
+      },
+      "title": "Normalize",
+      "type": "object"
+    },
+    "Provenance": {
+      "properties": {
+        "trainedBy": {
+          "description": "\"xorgate-model-forge@<version>\"",
+          "title": "Trainedby",
+          "type": "string"
+        },
+        "recipe": {
+          "title": "Recipe",
+          "type": "string"
+        },
+        "recipeLicense": {
+          "title": "Recipelicense",
+          "type": "string"
+        },
+        "base": {
+          "$ref": "#/$defs/ProvenanceBase"
+        },
+        "job": {
+          "title": "Job",
+          "type": "string"
+        },
+        "dataset": {
+          "$ref": "#/$defs/ProvenanceDataset"
+        },
+        "metrics": {
+          "$ref": "#/$defs/ProvenanceMetrics"
+        },
+        "trainedAt": {
+          "title": "Trainedat",
+          "type": "string"
+        },
+        "platform": {
+          "additionalProperties": true,
+          "description": "The job spec's opaque provenance block.",
+          "title": "Platform",
+          "type": "object"
+        }
+      },
+      "required": [
+        "trainedBy",
+        "recipe",
+        "recipeLicense",
+        "base",
+        "job",
+        "dataset",
+        "metrics",
+        "trainedAt"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "ProvenanceBase": {
+      "properties": {
+        "kind": {
+          "enum": [
+            "pretrained",
+            "weights"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ref"
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Path"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "ProvenanceBase",
+      "type": "object"
+    },
+    "ProvenanceDataset": {
+      "properties": {
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Version"
+        },
+        "images": {
+          "minimum": 0,
+          "title": "Images",
+          "type": "integer"
+        },
+        "hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "sha256 over dataset.json, annotations.coco.json and splits.json",
+          "title": "Hash"
+        }
+      },
+      "required": [
+        "images"
+      ],
+      "title": "ProvenanceDataset",
+      "type": "object"
+    },
+    "ProvenanceMetrics": {
+      "properties": {
+        "mAP50": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Map50"
+        },
+        "mAP50_95": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Map50 95"
+        }
+      },
+      "title": "ProvenanceMetrics",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "manifestVersion": {
+      "const": 1,
+      "default": 1,
+      "title": "Manifestversion",
+      "type": "integer"
+    },
+    "family": {
+      "minLength": 1,
+      "title": "Family",
+      "type": "string"
+    },
+    "name": {
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "version": {
+      "minimum": 1,
+      "title": "Version",
+      "type": "integer"
+    },
+    "label": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Label"
+    },
+    "backend": {
+      "enum": [
+        "cpu-onnx",
+        "gpu-endpoint"
+      ],
+      "title": "Backend",
+      "type": "string"
+    },
+    "input": {
+      "$ref": "#/$defs/ManifestInput"
+    },
+    "classNames": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Classnames",
+      "type": "array"
+    },
+    "postprocess": {
+      "$ref": "#/$defs/ManifestPostprocess"
+    },
+    "quantization": {
+      "anyOf": [
+        {
+          "enum": [
+            "fp32",
+            "fp16",
+            "int8"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Quantization"
+    },
+    "files": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/FileIntegrity"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Files"
+    },
+    "provenance": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Provenance"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Additive; written by the forge, ignored by engine 0.3.x."
+    }
+  },
+  "required": [
+    "family",
+    "name",
+    "version",
+    "backend",
+    "input",
+    "postprocess"
+  ],
+  "type": "object"
+}

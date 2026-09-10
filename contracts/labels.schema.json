@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://docs.xorgate.io/schemas/forge/labels.schema.json",
+  "title": "LabelsFile",
+  "x-forgeVersion": "0.1.0",
+  "$defs": {
+    "LabelBox": {
+      "properties": {
+        "cls": {
+          "description": "The dataset class after classMap.",
+          "title": "Cls",
+          "type": "string"
+        },
+        "modelCls": {
+          "description": "The model's own class name.",
+          "title": "Modelcls",
+          "type": "string"
+        },
+        "confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "xyxy": {
+          "description": "Absolute pixels.",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "title": "Xyxy",
+          "type": "array"
+        }
+      },
+      "required": [
+        "cls",
+        "modelCls",
+        "confidence",
+        "xyxy"
+      ],
+      "title": "LabelBox",
+      "type": "object"
+    },
+    "LabelsImage": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "boxes": {
+          "items": {
+            "$ref": "#/$defs/LabelBox"
+          },
+          "title": "Boxes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "boxes"
+      ],
+      "title": "LabelsImage",
+      "type": "object"
+    },
+    "LabelsModel": {
+      "properties": {
+        "family": {
+          "title": "Family",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "version": {
+          "minimum": 1,
+          "title": "Version",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "family",
+        "name",
+        "version"
+      ],
+      "title": "LabelsModel",
+      "type": "object"
+    },
+    "LabelsSummary": {
+      "properties": {
+        "images": {
+          "minimum": 0,
+          "title": "Images",
+          "type": "integer"
+        },
+        "boxes": {
+          "minimum": 0,
+          "title": "Boxes",
+          "type": "integer"
+        },
+        "perClass": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Perclass",
+          "type": "object"
+        },
+        "unmapped": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "Model classes above minConfidence with no classMap entry.",
+          "title": "Unmapped",
+          "type": "object"
+        }
+      },
+      "required": [
+        "images",
+        "boxes"
+      ],
+      "title": "LabelsSummary",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "labelsVersion": {
+      "const": 1,
+      "default": 1,
+      "title": "Labelsversion",
+      "type": "integer"
+    },
+    "jobId": {
+      "title": "Jobid",
+      "type": "string"
+    },
+    "model": {
+      "$ref": "#/$defs/LabelsModel"
+    },
+    "minConfidence": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Minconfidence",
+      "type": "number"
+    },
+    "classMap": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Classmap",
+      "type": "object"
+    },
+    "images": {
+      "items": {
+        "$ref": "#/$defs/LabelsImage"
+      },
+      "title": "Images",
+      "type": "array"
+    },
+    "summary": {
+      "$ref": "#/$defs/LabelsSummary"
+    }
+  },
+  "required": [
+    "jobId",
+    "model",
+    "minConfidence",
+    "images",
+    "summary"
+  ],
+  "type": "object"
+}

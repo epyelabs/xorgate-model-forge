@@ -1,0 +1,355 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://docs.xorgate.io/schemas/forge/job.schema.json",
+  "title": "job spec v1: job.json",
+  "x-forgeVersion": "0.1.0",
+  "$defs": {
+    "AutolabelJobSpec": {
+      "properties": {
+        "specVersion": {
+          "const": 1,
+          "default": 1,
+          "title": "Specversion",
+          "type": "integer"
+        },
+        "jobId": {
+          "minLength": 1,
+          "title": "Jobid",
+          "type": "string"
+        },
+        "recipe": {
+          "minLength": 1,
+          "title": "Recipe",
+          "type": "string"
+        },
+        "limits": {
+          "$ref": "#/$defs/Limits"
+        },
+        "provenance": {
+          "additionalProperties": true,
+          "description": "Opaque; copied into the manifest and the result. The platform puts orgId, datasetVersionId here.",
+          "title": "Provenance",
+          "type": "object"
+        },
+        "task": {
+          "const": "autolabel",
+          "title": "Task",
+          "type": "string"
+        },
+        "model": {
+          "$ref": "#/$defs/ModelRefSpec"
+        },
+        "minConfidence": {
+          "default": 0.4,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Minconfidence",
+          "type": "number"
+        },
+        "classMap": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "model class -> dataset class; unmapped model classes are counted, not written",
+          "title": "Classmap",
+          "type": "object"
+        },
+        "images": {
+          "anyOf": [
+            {
+              "const": "all",
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "default": "all",
+          "title": "Images"
+        }
+      },
+      "required": [
+        "jobId",
+        "recipe",
+        "task",
+        "model"
+      ],
+      "title": "AutolabelJobSpec",
+      "type": "object"
+    },
+    "BaseSpec": {
+      "description": "The weights training starts from.",
+      "properties": {
+        "kind": {
+          "enum": [
+            "pretrained",
+            "weights"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "pretrained: a recipe base such as \"yolov8n\"",
+          "title": "Ref"
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "weights: a path to a .pt file (train-from-previous)",
+          "title": "Path"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "BaseSpec",
+      "type": "object"
+    },
+    "Hyperparameters": {
+      "description": "Overrides on top of the recipe's preset (`mode`). Every field is\noptional here; the result carries the effective values.",
+      "properties": {
+        "epochs": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Epochs"
+        },
+        "imgsz": {
+          "anyOf": [
+            {
+              "minimum": 32,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Imgsz"
+        },
+        "batch": {
+          "anyOf": [
+            {
+              "const": "auto",
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Batch"
+        },
+        "patience": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Patience"
+        },
+        "seed": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Seed"
+        }
+      },
+      "title": "Hyperparameters",
+      "type": "object"
+    },
+    "Limits": {
+      "properties": {
+        "maxMinutes": {
+          "default": 60,
+          "description": "Wall-clock budget; training stops cleanly at it.",
+          "minimum": 1,
+          "title": "Maxminutes",
+          "type": "integer"
+        }
+      },
+      "title": "Limits",
+      "type": "object"
+    },
+    "ModelRefSpec": {
+      "description": "A registry model resolved through the model source.",
+      "properties": {
+        "family": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Family",
+          "type": "string"
+        },
+        "name": {
+          "description": "\"yolov8n\" or \"yolov8n@1\" (a pinned version rides in the name)",
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "family",
+        "name"
+      ],
+      "title": "ModelRefSpec",
+      "type": "object"
+    },
+    "OutputSpec": {
+      "description": "Where a `train` job publishes: the registry identity of the model.",
+      "properties": {
+        "family": {
+          "description": "\"detection\"",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Family",
+          "type": "string"
+        },
+        "name": {
+          "description": "The registry name a node's config carries.",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Name",
+          "type": "string"
+        },
+        "version": {
+          "minimum": 1,
+          "title": "Version",
+          "type": "integer"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Human name pickers show.",
+          "title": "Label"
+        }
+      },
+      "required": [
+        "family",
+        "name",
+        "version"
+      ],
+      "title": "OutputSpec",
+      "type": "object"
+    },
+    "TrainJobSpec": {
+      "properties": {
+        "specVersion": {
+          "const": 1,
+          "default": 1,
+          "title": "Specversion",
+          "type": "integer"
+        },
+        "jobId": {
+          "minLength": 1,
+          "title": "Jobid",
+          "type": "string"
+        },
+        "recipe": {
+          "minLength": 1,
+          "title": "Recipe",
+          "type": "string"
+        },
+        "limits": {
+          "$ref": "#/$defs/Limits"
+        },
+        "provenance": {
+          "additionalProperties": true,
+          "description": "Opaque; copied into the manifest and the result. The platform puts orgId, datasetVersionId here.",
+          "title": "Provenance",
+          "type": "object"
+        },
+        "task": {
+          "const": "train",
+          "title": "Task",
+          "type": "string"
+        },
+        "output": {
+          "$ref": "#/$defs/OutputSpec"
+        },
+        "base": {
+          "$ref": "#/$defs/BaseSpec"
+        },
+        "mode": {
+          "default": "fast",
+          "enum": [
+            "fast",
+            "accurate"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "hyperparameters": {
+          "$ref": "#/$defs/Hyperparameters"
+        }
+      },
+      "required": [
+        "jobId",
+        "recipe",
+        "task",
+        "output",
+        "base"
+      ],
+      "title": "TrainJobSpec",
+      "type": "object"
+    }
+  },
+  "discriminator": {
+    "mapping": {
+      "autolabel": "#/$defs/AutolabelJobSpec",
+      "train": "#/$defs/TrainJobSpec"
+    },
+    "propertyName": "task"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/TrainJobSpec"
+    },
+    {
+      "$ref": "#/$defs/AutolabelJobSpec"
+    }
+  ]
+}

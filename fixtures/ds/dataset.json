@@ -1,0 +1,20 @@
+{
+  "datasetVersion": 1,
+  "task": "object_detection",
+  "classes": [
+    "car",
+    "truck"
+  ],
+  "categoryIds": "zero-based",
+  "images": 63,
+  "splits": {
+    "train": 51,
+    "val": 12,
+    "test": 0
+  },
+  "source": {
+    "platform": "xorgate-model-forge",
+    "datasetName": "fixture-vehicles",
+    "video": "fixtures/video/drive.mp4"
+  }
+}

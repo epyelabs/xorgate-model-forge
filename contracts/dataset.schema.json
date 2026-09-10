@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://docs.xorgate.io/schemas/forge/dataset.schema.json",
+  "title": "DatasetHeader",
+  "x-forgeVersion": "0.1.0",
+  "$defs": {
+    "DatasetSource": {
+      "additionalProperties": true,
+      "description": "Where the dataset came from. Opaque to the forge; the platform writes\nits own ids here.",
+      "properties": {
+        "platform": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Platform"
+        },
+        "datasetId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Datasetid"
+        },
+        "datasetName": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Datasetname"
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Version"
+        },
+        "createdAt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Createdat"
+        }
+      },
+      "title": "DatasetSource",
+      "type": "object"
+    },
+    "SplitCounts": {
+      "properties": {
+        "train": {
+          "minimum": 0,
+          "title": "Train",
+          "type": "integer"
+        },
+        "val": {
+          "minimum": 0,
+          "title": "Val",
+          "type": "integer"
+        },
+        "test": {
+          "minimum": 0,
+          "title": "Test",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "train",
+        "val",
+        "test"
+      ],
+      "title": "SplitCounts",
+      "type": "object"
+    }
+  },
+  "description": "`dataset.json`.",
+  "properties": {
+    "datasetVersion": {
+      "const": 1,
+      "default": 1,
+      "title": "Datasetversion",
+      "type": "integer"
+    },
+    "task": {
+      "const": "object_detection",
+      "default": "object_detection",
+      "title": "Task",
+      "type": "string"
+    },
+    "classes": {
+      "description": "Class names in category-id order (0-based).",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Classes",
+      "type": "array"
+    },
+    "categoryIds": {
+      "const": "zero-based",
+      "default": "zero-based",
+      "title": "Categoryids",
+      "type": "string"
+    },
+    "images": {
+      "minimum": 0,
+      "title": "Images",
+      "type": "integer"
+    },
+    "splits": {
+      "$ref": "#/$defs/SplitCounts"
+    },
+    "source": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DatasetSource"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "classes",
+    "images",
+    "splits"
+  ],
+  "type": "object"
+}

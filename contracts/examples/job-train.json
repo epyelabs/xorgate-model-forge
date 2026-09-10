@@ -1,0 +1,18 @@
+{
+  "specVersion": 1,
+  "jobId": "tj_01J9X4M2K8",
+  "task": "train",
+  "recipe": "yolov8",
+  "output": { "family": "detection", "name": "yard-forklift", "version": 2, "label": "Forklift and pallet (yard cameras, v3)" },
+  "base": { "kind": "pretrained", "ref": "yolov8n" },
+  "mode": "fast",
+  "hyperparameters": { "epochs": 50, "imgsz": 640, "batch": "auto", "patience": 10, "seed": 0 },
+  "limits": { "maxMinutes": 60 },
+  "provenance": {
+    "orgId": "cb1e1710-3ee5-49ad-b3d3-32b2290f6e19",
+    "datasetId": "6b1c1d8e-5f0a-4c1e-9a7d-2f3e4b5c6d7e",
+    "datasetVersion": 3,
+    "datasetVersionId": "dv_01J9X0B2R4",
+    "requestedBy": "user_9f1c"
+  }
+}

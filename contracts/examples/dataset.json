@@ -1,0 +1,15 @@
+{
+  "datasetVersion": 1,
+  "task": "object_detection",
+  "classes": ["forklift", "pallet"],
+  "categoryIds": "zero-based",
+  "images": 412,
+  "splits": { "train": 330, "val": 82, "test": 0 },
+  "source": {
+    "platform": "xorgate",
+    "datasetId": "6b1c1d8e-5f0a-4c1e-9a7d-2f3e4b5c6d7e",
+    "datasetName": "yard-cameras",
+    "version": 3,
+    "createdAt": "2026-09-12T14:03:11.000Z"
+  }
+}

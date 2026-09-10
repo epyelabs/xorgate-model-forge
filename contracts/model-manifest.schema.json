@@ -1,0 +1,205 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs.xorgate.io/schemas/forge/model-manifest.schema.json",
+  "title": "model manifest v1 (vendored from @xorgate/workflow-engine 0.3.0, src/models/registry.ts)",
+  "x-engineVersion": "0.3.0",
+  "type": "object",
+  "properties": {
+    "manifestVersion": {
+      "type": "number",
+      "const": 1
+    },
+    "family": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1
+    },
+    "backend": {
+      "type": "string",
+      "enum": [
+        "cpu-onnx",
+        "gpu-endpoint"
+      ]
+    },
+    "input": {
+      "type": "object",
+      "properties": {
+        "width": {
+          "type": "integer",
+          "exclusiveMinimum": 0
+        },
+        "height": {
+          "type": "integer",
+          "exclusiveMinimum": 0
+        },
+        "layout": {
+          "type": "string",
+          "const": "nchw",
+          "default": "nchw"
+        },
+        "colorSpace": {
+          "type": "string",
+          "const": "rgb",
+          "default": "rgb"
+        },
+        "normalize": {
+          "type": "object",
+          "properties": {
+            "scale": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "default": 0.00392156862745098
+            },
+            "mean": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "items": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            },
+            "std": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "items": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "default": {}
+        },
+        "letterbox": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "padValue": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 255,
+              "default": 114
+            }
+          },
+          "additionalProperties": false,
+          "default": {}
+        }
+      },
+      "required": [
+        "width",
+        "height"
+      ],
+      "additionalProperties": false
+    },
+    "classNames": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "default": []
+    },
+    "postprocess": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "yolov8",
+            "rtdetr",
+            "yolov8-seg",
+            "depth-anything"
+          ]
+        },
+        "nmsIouThreshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.45
+        },
+        "maskThreshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.5
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "quantization": {
+      "type": "string",
+      "enum": [
+        "fp32",
+        "fp16",
+        "int8"
+      ]
+    },
+    "files": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "sha256",
+          "sizeBytes"
+        ],
+        "additionalProperties": false
+      },
+      "propertyNames": {
+        "minLength": 1
+      }
+    }
+  },
+  "required": [
+    "manifestVersion",
+    "family",
+    "name",
+    "version",
+    "backend",
+    "input",
+    "postprocess"
+  ],
+  "additionalProperties": false
+}

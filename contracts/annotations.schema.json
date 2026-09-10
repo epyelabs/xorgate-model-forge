@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://docs.xorgate.io/schemas/forge/annotations.schema.json",
+  "title": "CocoFile",
+  "x-forgeVersion": "0.1.0",
+  "$defs": {
+    "CocoAnnotation": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "integer"
+        },
+        "image_id": {
+          "title": "Image Id",
+          "type": "string"
+        },
+        "category_id": {
+          "minimum": 0,
+          "title": "Category Id",
+          "type": "integer"
+        },
+        "bbox": {
+          "description": "[x, y, w, h] absolute pixels",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "title": "Bbox",
+          "type": "array"
+        },
+        "area": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Area"
+        },
+        "iscrowd": {
+          "default": 0,
+          "title": "Iscrowd",
+          "type": "integer"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "\"human\" or \"model\"",
+          "title": "Source"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        }
+      },
+      "required": [
+        "id",
+        "image_id",
+        "category_id",
+        "bbox"
+      ],
+      "title": "CocoAnnotation",
+      "type": "object"
+    },
+    "CocoCategory": {
+      "properties": {
+        "id": {
+          "minimum": 0,
+          "title": "Id",
+          "type": "integer"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "title": "CocoCategory",
+      "type": "object"
+    },
+    "CocoImage": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "file_name": {
+          "title": "File Name",
+          "type": "string"
+        },
+        "width": {
+          "minimum": 1,
+          "title": "Width",
+          "type": "integer"
+        },
+        "height": {
+          "minimum": 1,
+          "title": "Height",
+          "type": "integer"
+        },
+        "group": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Split-by-group key (a recording session bucket).",
+          "title": "Group"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source"
+        }
+      },
+      "required": [
+        "id",
+        "file_name",
+        "width",
+        "height"
+      ],
+      "title": "CocoImage",
+      "type": "object"
+    }
+  },
+  "description": "`annotations.coco.json`.",
+  "properties": {
+    "info": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Info"
+    },
+    "categories": {
+      "items": {
+        "$ref": "#/$defs/CocoCategory"
+      },
+      "title": "Categories",
+      "type": "array"
+    },
+    "images": {
+      "items": {
+        "$ref": "#/$defs/CocoImage"
+      },
+      "title": "Images",
+      "type": "array"
+    },
+    "annotations": {
+      "items": {
+        "$ref": "#/$defs/CocoAnnotation"
+      },
+      "title": "Annotations",
+      "type": "array"
+    }
+  },
+  "required": [
+    "categories",
+    "images",
+    "annotations"
+  ],
+  "type": "object"
+}

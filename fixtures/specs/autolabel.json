@@ -1,0 +1,12 @@
+{
+  "specVersion": 1,
+  "jobId": "autolabel",
+  "task": "autolabel",
+  "recipe": "yolov8",
+  "model": { "family": "detection", "name": "yolov8n" },
+  "minConfidence": 0.4,
+  "classMap": { "car": "car", "truck": "truck", "bus": "truck" },
+  "images": "all",
+  "limits": { "maxMinutes": 10 },
+  "provenance": { "orgId": "fixture", "datasetId": "fixture-vehicles" }
+}

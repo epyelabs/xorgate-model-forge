@@ -1,0 +1,95 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "xorgate-forge"
+version = "0.1.0"
+description = "xorgate-model-forge (xmf): train, evaluate, auto-label, export and check detection models against the xorgate workflow engine's model registry contract."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [{ name = "Epye Labs" }]
+keywords = ["xorgate", "onnx", "yolo", "training", "object-detection", "sagemaker"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+# The base install is the contracts, the dataset tools and the check; it
+# stays light on purpose (design 3a). Trainers come through extras.
+dependencies = [
+  "pydantic>=2.7,<3",
+  "numpy>=1.26",
+  "pillow>=10",
+  "onnx>=1.16",
+]
+
+[project.optional-dependencies]
+# The `yolov8` recipe (Ultralytics, AGPL-3.0 code and weights).
+yolov8 = [
+  "ultralytics>=8.3,<9",
+  "torch>=2.4",
+  "torchvision>=0.19",
+  "onnxruntime>=1.18",
+  "onnxslim>=0.1.34",
+]
+# Auto-labeling and evaluation with any registry model (ONNX Runtime, CPU).
+assist = ["onnxruntime>=1.18"]
+all = ["xorgate-forge[yolov8,assist]"]
+dev = [
+  "ruff>=0.6",
+  "mypy>=1.11",
+  "types-Pillow",
+]
+
+[project.scripts]
+xmf = "xorgate_forge.cli.main:entrypoint"
+
+[project.urls]
+Homepage = "https://docs.xorgate.io/docs/models"
+Repository = "https://github.com/epyelabs/xorgate-model-forge"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/xorgate_forge"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/xorgate_forge", "contracts", "README.md", "LICENSE", "CHANGELOG.md"]
+
+# On Linux, torch comes from the CPU wheel index so a laptop, CI runner or
+# the cpu image never pulls the CUDA stack; macOS wheels on PyPI are CPU/MPS
+# already. The cuda image starts from a PyTorch base image and keeps its
+# torch (Dockerfile).
+[tool.uv]
+default-groups = []
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+torchvision = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+src = ["src", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+ignore = ["RUF012", "SIM108", "B905"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unused_ignores = false
+ignore_missing_imports = true
+files = ["src/xorgate_forge"]
+plugins = ["pydantic.mypy"]
+
+[tool.ruff.lint.per-file-ignores]
+# The golden suite and the fixture scripts read better as long one-line checks, like the engine's.
+"scripts/*" = ["E501"]
