@@ -45,7 +45,9 @@ COPY contracts ./contracts
 RUN pip install ".[all]" && rm -rf /build
 
 # Bake the base weights (the recipes' pretrained refs) so jobs never download.
-RUN XMF_WEIGHTS_PULL=1 xmf weights pull --dir /opt/forge/weights \
+# yolo26n.pt is what Ultralytics' AMP check loads on CUDA hosts; baked here and
+# copied into the trainer's cwd by the recipe so the check needs no network.
+RUN XMF_WEIGHTS_PULL=1 xmf weights pull yolov8n yolov8s yolo26n --dir /opt/forge/weights \
     && ls -la /opt/forge/weights
 
 WORKDIR /work
@@ -73,7 +75,7 @@ COPY contracts ./contracts
 # torch and torchvision are the base image's; pip leaves a satisfied requirement alone.
 RUN pip install ".[all]" && rm -rf /build
 
-RUN XMF_WEIGHTS_PULL=1 xmf weights pull --dir /opt/forge/weights \
+RUN XMF_WEIGHTS_PULL=1 xmf weights pull yolov8n yolov8s yolo26n --dir /opt/forge/weights \
     && ls -la /opt/forge/weights
 
 WORKDIR /work

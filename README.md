@@ -193,7 +193,8 @@ docker run --rm -v "$PWD":/work ghcr.io/epyelabs/xmf:dev run fixtures/specs/quic
 ```
 
 Both targets bake the recipes' base weights under `/opt/forge/weights` at
-build time (the only network access a training job needs), set `WORKDIR
+build time (the only network access a training job needs; `yolo26n.pt` is
+baked too, for the AMP check Ultralytics runs on CUDA hosts), set `WORKDIR
 /work` for the mounted local case, and default to the SageMaker entrypoint.
 
 CI (`.github/workflows/ci.yml`) runs lint, typecheck and the golden suite on
