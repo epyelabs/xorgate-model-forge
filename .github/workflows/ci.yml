@@ -36,6 +36,7 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+          python-version: "3.11"
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -50,7 +51,7 @@ jobs:
             ~/.xorgate/forge/weights
           key: fixtures-${{ hashFiles('fixtures/fixtures.json', 'src/xorgate_forge/recipes/yolov8.py') }}
 
-      - run: uv sync --extra all --extra dev
+      - run: uv sync --python 3.11 --extra all --extra dev
       - run: npm ci --no-audit --no-fund
       - run: make lint
       - run: make typecheck

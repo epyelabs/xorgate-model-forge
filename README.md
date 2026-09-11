@@ -23,7 +23,7 @@ pip install "xorgate-forge[assist]"       # auto-labeling and evaluation with an
 pip install "xorgate-forge[all]"
 ```
 
-Python 3.11 or newer. On Linux, install torch from the CPU wheel index
+Python 3.11 (the version `.python-version` pins for `uv`; newer interpreters run the package but the strict typecheck targets 3.11). On Linux, install torch from the CPU wheel index
 first when you do not want the CUDA stack (`pip install torch torchvision
 --index-url https://download.pytorch.org/whl/cpu`); the checkout's `uv.lock`
 already does that. `xmf doctor` tells you what a machine is missing and how

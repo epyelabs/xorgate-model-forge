@@ -18,7 +18,7 @@ help:
 	@echo "images           build the cpu image for the native architecture (see image-cpu-multiarch, image-cuda)"
 
 setup:
-	$(UV) sync --extra all --extra dev
+	$(UV) sync --python 3.11 --extra all --extra dev
 	npm ci --no-audit --no-fund
 
 lint:
