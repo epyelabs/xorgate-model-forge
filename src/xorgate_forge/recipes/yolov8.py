@@ -45,7 +45,8 @@ def _prepare_environment(work_dir: Path) -> None:
 def _route_ultralytics_logging(train_log: Path, level: int) -> logging.FileHandler:
     """Ultralytics logs to stdout by default; stdout is the progress
     stream, so its lines go to `train.log` and, at the CLI's level, stderr."""
-    import ultralytics.utils as uu
+    with contextlib.redirect_stdout(sys.stderr):
+        import ultralytics.utils as uu
 
     logger = uu.LOGGER
     for h in list(logger.handlers):
@@ -66,9 +67,10 @@ def _route_ultralytics_logging(train_log: Path, level: int) -> logging.FileHandl
 def download_ultralytics_asset(target: Path) -> None:
     """Fetch a release asset (`yolov8n.pt`) into `target`; the progress bar
     is off and stdout is redirected so nothing reaches the progress stream."""
-    from ultralytics.utils.downloads import attempt_download_asset
-
+    # The import itself can print (a first-run settings notice) so it sits inside the redirect too.
     with contextlib.redirect_stdout(sys.stderr):
+        from ultralytics.utils.downloads import attempt_download_asset
+
         attempt_download_asset(str(target), progress=False)
 
 

@@ -660,7 +660,18 @@ def _case_6() -> None:
         "epoch lines carry loss and mAP50",
         all(isinstance(e.get("loss"), float) and isinstance(e.get("mAP50"), float) for e in epochs),
     )
-    stdout_lines = [json.loads(ln) for ln in r.stdout.strip().splitlines()]
+    stdout_lines: list[Any] = []
+    bad_lines: list[str] = []
+    for ln in r.stdout.strip().splitlines():
+        try:
+            stdout_lines.append(json.loads(ln))
+        except json.JSONDecodeError:
+            bad_lines.append(ln)
+    check(
+        "--progress json puts only NDJSON on stdout",
+        not bad_lines,
+        f"first non-JSON line: {bad_lines[0][:200]!r}" if bad_lines else "",
+    )
     check(
         "--progress json streamed the same messages to stdout",
         stdout_lines == prog,
