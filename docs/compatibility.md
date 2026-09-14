@@ -12,10 +12,10 @@ depend on, so they are what the version number is about.
 | --- | --- | --- | --- | --- |
 | Dataset | `datasetVersion: 1`: `dataset.json`, `annotations.coco.json` (COCO detection, 0-based category ids, string image ids), `splits.json`, `images/` | `xorgate_forge.contracts.dataset` | `contracts/dataset.schema.json`, `annotations.schema.json`, `splits.schema.json` | the platform's version builder, `xmf dataset *`, every recipe |
 | Job spec | `specVersion: 1`, `task: train \| autolabel`, discriminated on `task` | `xorgate_forge.contracts.job` | `contracts/job.schema.json` | the platform's dispatcher, operators |
-| Result | `resultVersion: 1`, written last, always; `status: succeeded \| failed`, `error {phase, message}` | `xorgate_forge.contracts.result` | `contracts/result.schema.json` | the platform's finalizer, tooling |
+| Result | `resultVersion: 1`, written last, always; `status: succeeded \| failed`, `error {phase, message}`; `metrics.confidence` (the operating confidence) since 0.2.0 | `xorgate_forge.contracts.result` | `contracts/result.schema.json` | the platform's finalizer, tooling |
 | Progress | one object per line, `t: status \| epoch \| log`, each stamped `at`; `phase: prepare \| train \| export \| check \| evaluate \| label \| done` | `xorgate_forge.contracts.progress` | `contracts/progress.schema.json` | the platform's job endpoint, `--progress json` consumers |
 | Labels | `labelsVersion: 1`, the `autolabel` output | `xorgate_forge.contracts.labels` | `contracts/labels.schema.json` | the platform's annotation import |
-| Model manifest | the engine's manifest v1 (vendored schema, `contracts/model-manifest.schema.json`) plus the additive optional `provenance` block | `xorgate_forge.contracts.manifest` | `contracts/manifest-with-provenance.schema.json` | registries, `xmf check`, `xwe models check`, engine 0.4.0's typed `provenance` |
+| Model manifest | the engine's manifest v1 (vendored schema, `contracts/model-manifest.schema.json`) plus the additive optional `provenance` block; `provenance.metrics.confidence` since 0.2.0 | `xorgate_forge.contracts.manifest` | `contracts/manifest-with-provenance.schema.json` | registries, `xmf check`, `xwe models check`, engine 0.4.0's typed `provenance` |
 | Output tree | `<job dir>/result.json`, `progress.jsonl`, `model/<family>/<name>/<version>/{manifest.json, model.onnx}`, `weights/best.pt`, `eval/{metrics.json, confusion.json, samples/<n>.jpg}`, `train.log`, `labels.json` | `xorgate_forge.runner` | | hosts, the platform's finalizer, `xwe run --models-dir` |
 | Host seams | `DatasetSource`, `ModelSource`, `ArtifactSink`, `ProgressSink`, `SecretReader`; `Host` | `xorgate_forge.seams` | | host implementers (`LocalHost`, `SageMakerHost`, the platform) |
 | SageMaker mapping | `/opt/ml/input/data/dataset`, `/opt/ml/input/config/job.json`, `/opt/ml/input/data/models`, `/opt/ml/model`, `/opt/ml/checkpoints/progress.jsonl`; `XMF_SAGEMAKER_ROOT` | `xorgate_forge.hosts.sagemaker` | | the platform's training-job request builder |
@@ -63,6 +63,12 @@ Two rules the table implies:
   schemas` regenerates them from the pydantic models (and the manifest
   schema from the engine package); the golden suite fails when the
   committed copies drift.
+
+Additive changes so far, by the release that introduced them:
+
+| Release | Contract | Change |
+| --- | --- | --- |
+| 0.2.0 | Result, Model manifest | `metrics.confidence` and `provenance.metrics.confidence`: the operating confidence (the F1-maximizing threshold on the validation split at IoU 0.5) at which `precision` and `recall` are reported; null when no threshold yields a true positive. Optional; a 0.1.0 document has no value and every 0.1.0 reader ignores it. |
 
 While the package is `0.x`, semantic versioning would allow breaking
 changes on minors. This package does not use that latitude: the rules

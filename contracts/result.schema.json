@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://docs.xorgate.io/schemas/forge/result.schema.json",
   "title": "JobResult",
-  "x-forgeVersion": "0.1.0",
+  "x-forgeVersion": "0.2.0",
   "$defs": {
     "Artifacts": {
       "properties": {
@@ -238,6 +238,21 @@
           },
           "title": "Perclass",
           "type": "array"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The operating confidence: the threshold that maximizes F1 on the validation split at IoU 0.5, at which precision and recall are reported. A detection node running this model should use it as its minimum confidence. Null when no threshold yields a true positive (precision and recall are then 0 and the model is not worth running). 0.2.0, additive.",
+          "title": "Confidence"
         }
       },
       "required": [

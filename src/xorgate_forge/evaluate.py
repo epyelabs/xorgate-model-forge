@@ -155,6 +155,11 @@ def evaluate_model(
         if f1 > best_f1 + 1e-9:
             best_conf, best_f1 = float(c_thr), f1
     confidence = round(best_conf, 2)
+    # The operating point exists only when some threshold yields a true positive.
+    # A model with F1 0 everywhere gets the grid floor for the renders below and
+    # NO operating confidence in the metrics: precision and recall read 0 and a
+    # detection node has no threshold worth running it at.
+    operating_confidence: float | None = confidence if best_f1 > 0 else None
 
     per_class: list[PerClassMetrics] = []
     ap50_all: list[float] = []
@@ -201,6 +206,7 @@ def evaluate_model(
         precision=round(sum_tp / (sum_tp + sum_fp), 4) if sum_tp + sum_fp else 0.0,
         recall=round(sum_tp / total_gt, 4) if total_gt else 0.0,
         perClass=per_class,
+        confidence=operating_confidence,
     )
 
     # Confusion matrix at the reporting confidence (rows predicted, columns true, last = background).

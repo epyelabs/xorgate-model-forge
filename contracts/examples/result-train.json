@@ -12,7 +12,7 @@
   "hyperparameters": { "epochs": 50, "imgsz": 640, "batch": 16, "patience": 10, "seed": 0 },
   "epochsCompleted": 37,
   "metrics": {
-    "mAP50": 0.912, "mAP50_95": 0.664, "precision": 0.905, "recall": 0.881,
+    "mAP50": 0.912, "mAP50_95": 0.664, "precision": 0.905, "recall": 0.881, "confidence": 0.35,
     "perClass": [
       { "name": "forklift", "mAP50": 0.951, "precision": 0.93, "recall": 0.92, "instances": 96 },
       { "name": "pallet", "mAP50": 0.873, "precision": 0.88, "recall": 0.84, "instances": 181 }

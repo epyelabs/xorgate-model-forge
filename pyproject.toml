@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "xorgate-forge"
-version = "0.1.0"
+version = "0.2.0"
 description = "xorgate-model-forge (xmf): train, evaluate, auto-label, export and check detection models against the xorgate workflow engine's model registry contract."
 readme = "README.md"
 license = "MIT"

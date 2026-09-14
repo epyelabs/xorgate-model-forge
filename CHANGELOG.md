@@ -5,6 +5,30 @@ All notable changes to `xorgate-forge` (`xmf`). The version rules are in
 
 ## Unreleased
 
+## 0.2.0 - 2026-09-14
+
+The first tagged release. Everything listed under 0.1.0 below shipped as the
+untagged images `ghcr.io/epyelabs/xmf:0.1.0`; this release adds one field to
+two contracts and is otherwise the same package.
+
+### Added
+
+- `metrics.confidence` on result v1 and `provenance.metrics.confidence` on
+  the model manifest: the operating confidence, the threshold that
+  maximizes F1 on the validation split at IoU 0.5, at which `precision`
+  and `recall` are reported (the value the job log already printed as "at
+  confidence 0.05"). Additive and optional; a reader of 0.1.0 documents
+  sees no value. A detection node running the model should use it as its
+  minimum confidence: a small fine-tune can rank its classes well (a high
+  mAP50) while every score sits under a generic default such as 0.1, and
+  the platform's picker now prefills the node's threshold from this field.
+  The value is null when no threshold on the grid yields a true positive
+  (precision and recall then read 0): such a model has no operating point
+  and nothing should prefill from it. Schemas and examples regenerated; the
+  golden suite asserts the field in both documents and that the two agree.
+
+## 0.1.0 - 2026-09-11
+
 ### Added
 
 - The four forge contracts (dataset v1, job spec v1, result v1, progress v1),

@@ -610,18 +610,22 @@ def _case_6() -> None:
         and prov.get("job") == "quick"
         and len(prov.get("dataset", {}).get("hash", "")) == 64
         and "mAP50" in prov.get("metrics", {})
+        and isinstance(prov.get("metrics", {}).get("confidence"), float)
         and prov.get("platform", {}).get("orgId") == "fixture",
         json.dumps(prov)[:200],
     )
     metrics = res.get("metrics", {})
     check(
-        "metrics: mAP50, mAP50_95, precision, recall and two per-class rows",
+        "metrics: mAP50, mAP50_95, precision, recall, the operating confidence and two per-class rows",
         all(k in metrics for k in ("mAP50", "mAP50_95", "precision", "recall"))
-        and [pc["name"] for pc in metrics.get("perClass", [])] == ["car", "truck"],
+        and [pc["name"] for pc in metrics.get("perClass", [])] == ["car", "truck"]
+        and isinstance(metrics.get("confidence"), float)
+        and 0.05 <= metrics["confidence"] <= 0.95
+        and metrics["confidence"] == prov.get("metrics", {}).get("confidence"),
         json.dumps(metrics)[:200],
     )
     print(
-        f"     (quick metrics: mAP50 {metrics.get('mAP50')}, mAP50-95 {metrics.get('mAP50_95')}, precision {metrics.get('precision')}, recall {metrics.get('recall')})"
+        f"     (quick metrics: mAP50 {metrics.get('mAP50')}, mAP50-95 {metrics.get('mAP50_95')}, precision {metrics.get('precision')}, recall {metrics.get('recall')} at confidence {metrics.get('confidence')})"
     )
     # 3 epochs at 320 measured mAP50 0.0 on this fixture (Ultralytics' first epochs on a 7-batch epoch); 10 reached 0.48.
     check(

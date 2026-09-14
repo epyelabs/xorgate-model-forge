@@ -67,6 +67,9 @@ class ProvenanceDataset(ContractModel):
 class ProvenanceMetrics(ContractModel):
     mAP50: float | None = None
     mAP50_95: float | None = None
+    confidence: float | None = Field(
+        default=None, ge=0, le=1, description="The operating confidence the evaluation reported at (0.2.0, additive)."
+    )
 
 
 class Provenance(ContractModel):

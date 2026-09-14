@@ -35,7 +35,7 @@ recipe, so a job runs with network isolation on:
 ```bash
 docker run --rm -v "$PWD":/work ghcr.io/epyelabs/xmf doctor
 docker run --rm -v "$PWD":/work ghcr.io/epyelabs/xmf run job.json --dataset ds --out out
-docker run --rm --gpus all -v "$PWD":/work ghcr.io/epyelabs/xmf:0.1.0-cuda run job.json --dataset ds --out out
+docker run --rm --gpus all -v "$PWD":/work ghcr.io/epyelabs/xmf:0.2.0-cuda run job.json --dataset ds --out out
 ```
 
 `ghcr.io/epyelabs/xmf:<version>` is the CPU image (linux/amd64 and
@@ -89,7 +89,15 @@ xmf weights pull yolov8n yolov8s                             # base weights into
   the check is the same four assertions as `xwe models check` with the same
   four-line output (the `session` line names this runtime); evaluate runs
   the manifest's own letterbox and decode over the validation split, so
-  the metrics describe the artifact the engine will run.
+  the metrics describe the artifact the engine will run. `metrics.mAP50`
+  and `mAP50_95` are ranking metrics; `precision` and `recall` are
+  measured at `metrics.confidence`, the operating confidence (the
+  threshold that maximizes F1 at IoU 0.5), which the manifest's
+  `provenance.metrics` repeats. Run the model with that value as the
+  detection node's minimum confidence: a small fine-tune can carry a high
+  mAP50 while every score sits under a generic default such as 0.1. A
+  model with no true positive at any threshold reports no operating
+  confidence at all (`null`, with precision and recall 0): train longer.
 - **Models** for `autolabel` resolve from `--models-dir` roots, then the
   cache (`XWE_MODELS_DIR`, default `~/.xorgate/models`, the same directory
   `xwe models pull` fills). Base weights resolve from `XMF_WEIGHTS_DIR`

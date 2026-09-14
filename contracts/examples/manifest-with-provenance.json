@@ -50,7 +50,8 @@
     },
     "metrics": {
       "mAP50": 0.912,
-      "mAP50_95": 0.664
+      "mAP50_95": 0.664,
+      "confidence": 0.35
     },
     "trainedAt": "2026-09-12T14:41:37.000Z",
     "platform": {

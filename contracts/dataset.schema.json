@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://docs.xorgate.io/schemas/forge/dataset.schema.json",
   "title": "DatasetHeader",
-  "x-forgeVersion": "0.1.0",
+  "x-forgeVersion": "0.2.0",
   "$defs": {
     "DatasetSource": {
       "additionalProperties": true,

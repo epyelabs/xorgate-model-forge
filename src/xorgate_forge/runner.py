@@ -283,7 +283,11 @@ class JobRunner:
                 f"precision {ev.metrics.precision:.3f}, recall {ev.metrics.recall:.3f} at confidence {ev.confidence}"
             )
             # The manifest's provenance carries the metrics of the artifact it describes.
-            manifest["provenance"]["metrics"] = {"mAP50": ev.metrics.mAP50, "mAP50_95": ev.metrics.mAP50_95}
+            manifest["provenance"]["metrics"] = {
+                "mAP50": ev.metrics.mAP50,
+                "mAP50_95": ev.metrics.mAP50_95,
+                "confidence": ev.metrics.confidence,
+            }
             write_json(dest / "manifest.json", manifest)
         finally:
             shutil.rmtree(work_dir, ignore_errors=True)

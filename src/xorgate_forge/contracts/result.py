@@ -43,6 +43,17 @@ class Metrics(ContractModel):
     precision: float
     recall: float
     perClass: list[PerClassMetrics] = Field(default_factory=list)
+    confidence: float | None = Field(
+        default=None,
+        ge=0,
+        le=1,
+        description=(
+            "The operating confidence: the threshold that maximizes F1 on the validation split at IoU 0.5, "
+            "at which precision and recall are reported. A detection node running this model should use it "
+            "as its minimum confidence. Null when no threshold yields a true positive (precision and recall "
+            "are then 0 and the model is not worth running). 0.2.0, additive."
+        ),
+    )
 
 
 class ResultModel(ContractModel):
